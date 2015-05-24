@@ -1,3 +1,4 @@
+Decimal = require 'decimal.js'
 
 ###*
  * This is heart of our trading bot. Function below is called
@@ -16,13 +17,42 @@
  * @returns {object}          An order to be executed, can be null
 ###
 exports.tick = (price, candle, account) ->
-  r = Math.random()
-  amount = 1
 
-  # Sell 1 dollar for equivalent amount of btc
-  if r < 0.33 and account.USD > amount then return sell: amount
+  # convert candle Float values into Decimal objects
+  candleOpen = new Decimal candle.open
+  candleHigh = new Decimal candle.high
+  candleLow = new Decimal candle.low
+  candleClose = new Decimal candle.close
 
-  # Buy 1 dollar for equivalent amount of btc
-  if r < 0.66 and account.BTC > amount / price then return buy: amount
+  # start analysing the candle
+  analysis =
+    trend: '??'
+    direction: '??'
+    height: (candleOpen.minus candleClose).toNumber()
+
+  if analysis.height > 0
+    analysis.direction = 'down'
+    analysis.trend = 'bearish'
+    analysis.topWick = (candleHigh.minus candleOpen).toNumber()
+    analysis.bottomWick = (candleClose.minus candleLow).toNumber()
+  else
+    analysis.height = Math.abs analysis.height
+    analysis.direction = 'up'
+    analysis.trend = 'bullish'
+    analysis.topWick = (candleHigh.minus candleClose).toNumber()
+    analysis.bottomWick = (candleOpen.minus candleLow).toNumber()
+
+  # bullish, rising
+  # bearish, falling
+
+  if analysis.trend is 'bearish'
+    # sell 1 BTC if we have enough
+    if account.BTC > 1
+      return buy: price
+  else
+    # buy 1 BTC is we have enough USD
+    if account.USD > price
+      return sell: price
 
   return null # do nothing
+
