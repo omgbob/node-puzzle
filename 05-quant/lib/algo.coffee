@@ -54,10 +54,10 @@ exports.tick = (price, candle, account) ->
       return buy: (account.BTC - 0.001) * price
   else
     # buy as many BTC as we can and stay above $1000 total worth
-    if accountWorth > accountMin
-      availableUSD = accountWorth - accountMin - (account.BTC * price)
-      if availableUSD > 0
-        return sell: availableUSD
+    # if accountWorth > accountMin
+    #   availableUSD = accountWorth - accountMin - (account.BTC * price)
+    #   if availableUSD > 0
+    #     return sell: availableUSD
     # buy BTC if we have enough USD
     if account.USD > price
       return sell: account.USD
