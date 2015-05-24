@@ -12,5 +12,8 @@
     "coffee-script": "^1.9.0",
     "mocha": "^1.21.4",
     "lodash": "latest"
+  },
+  "devDependencies": {
+    "decimal.js": "^4.0.2"
   }
 }
