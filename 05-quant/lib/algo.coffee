@@ -45,21 +45,22 @@ exports.tick = (price, candle, account) ->
   # bullish, rising
   # bearish, falling
 
+  accountMin = 1000
   accountWorth = account.USD + (account.BTC * price)
 
   if analysis.trend is 'bearish'
-    # sell 1 BTC if we have enough
+    # sell BTC if we have any available
     if account.BTC > 1
-      return buy: price
+      return buy: (account.BTC - 0.001) * price
   else
     # buy as many BTC as we can and stay above $1000 total worth
-    if accountWorth > 1000
-      availableUSD = accountWorth - 1000 - (account.BTC * price)
+    if accountWorth > accountMin
+      availableUSD = accountWorth - accountMin - (account.BTC * price)
       if availableUSD > 0
         return sell: availableUSD
-    # buy 1 BTC is we have enough USD
+    # buy BTC if we have enough USD
     if account.USD > price
-      return sell: price
+      return sell: account.USD
 
   return null # do nothing
 
